@@ -121,6 +121,18 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
     return () => clearInterval(interval);
   }, [session?.status, sessionId]);
 
+  // Layout toggles - Strictly enforced for mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024 && showEditor && showChat) {
+        setShowChat(false); // Prioritize editor on mobile if both are somehow on
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, [showEditor, showChat]);
+
   // Main Socket & WebRTC setup
   useEffect(() => {
     if (session?.status !== 'active' || !profile) return;
@@ -441,72 +453,52 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
         ) : (
           /* ACTIVE STATE: FLEX COLUMNS */
           <div className="flex-1 flex flex-col lg:flex-row gap-2 sm:gap-3 relative z-10 w-full min-h-0">
-            {/* Left Col: Code Editor */}
-            {showEditor && (
-              <div className="w-full lg:w-3/5 xl:w-2/3 flex-1 lg:h-full transition-all flex flex-col min-h-0">
-                <CodeEditor code={code} language={language} onChange={handleCodeChange} onLanguageChange={handleLanguageChange} />
-              </div>
-            )}
+            {/* Lg screens: split; Mobile screens: stacked but handled by toggles */}
 
-            {/* Right Col: Video grid + Chat */}
-            <div className={`flex flex-col gap-2 sm:gap-3 transition-all lg:h-full min-h-0 relative ${showEditor ? 'w-full lg:w-2/5 xl:w-1/3' : 'w-full max-w-4xl mx-auto flex-1'} `}>
-              {/* VIDEO GRID (Top half of right col) */}
-              <div className="w-full bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative aspect-video lg:aspect-auto shrink-0 max-h-[25vh] lg:max-h-none lg:h-[35%]">
-
-                {/* Remote WebRTC Video */}
-                <video
-                  ref={remoteVideoRef}
-                  autoPlay playsInline
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Fallback if remote stream loads but is black/off */}
+            {/* 1. Video Section (Always visible, but compact on mobile) */}
+            <div className={`flex flex-col gap-2 sm:gap-3 transition-all lg:h-full min-h-0 relative lg:order-2 ${showEditor ? 'w-full lg:w-2/5 xl:w-1/3 shrink-0' : 'w-full max-w-4xl mx-auto flex-1'}`}>
+              <div className="w-full bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative aspect-video lg:aspect-auto shrink-0 h-[25vh] sm:h-[30vh] lg:h-[40%]">
+                <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
                 {!remoteStreamHasVideo && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                     <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-800 rounded-full flex items-center justify-center border-2 border-slate-700 shadow-xl mb-3">
                       <span className="text-2xl sm:text-3xl text-slate-500 font-bold">{otherPersonEmail?.charAt(0).toUpperCase() || '?'}</span>
                     </div>
-                    <p className="font-medium text-white text-xs sm:text-sm bg-black/50 px-3 py-1 rounded-full backdrop-blur-md">Waiting for video...</p>
+                    <p className="font-medium text-white text-[10px] sm:text-sm bg-black/50 px-3 py-1 rounded-full backdrop-blur-md">Waiting for video...</p>
                   </div>
                 )}
-
-                {/* Local WebRTC Video (Picture-in-Picture) */}
-                <div className="absolute top-4 right-4 w-[30%] sm:w-[25%] aspect-[3/4] sm:aspect-video bg-slate-800 border-2 border-slate-700/80 rounded-xl overflow-hidden shadow-2xl z-20 transition-all hover:scale-105 group/pip bg-black">
+                <div className="absolute top-3 right-3 w-[25%] sm:w-[20%] aspect-video bg-slate-800 border border-white/10 rounded-lg overflow-hidden shadow-2xl z-20 transition-all hover:scale-105 group/pip">
                   {videoOn ? (
-                    <video
-                      ref={localVideoRef}
-                      autoPlay playsInline muted
-                      className="w-full h-full object-cover transform -scale-x-100"
-                    />
+                    <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover transform -scale-x-100" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-slate-900">
-                      <VideoOff className="w-4 h-4 sm:w-6 sm:h-6 text-slate-600" />
+                    <div className="w-full h-full flex items-center justify-center bg-slate-950">
+                      <VideoOff className="w-3 h-3 sm:w-5 sm:h-5 text-slate-600" />
                     </div>
                   )}
                   {!micOn && (
-                    <div className="absolute top-1 right-1 p-1 bg-red-500 rounded backdrop-blur-md">
-                      <MicOff className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
+                    <div className="absolute top-0.5 right-0.5 p-0.5 bg-red-500 rounded backdrop-blur-md">
+                      <MicOff className="w-2 h-2 text-white" />
                     </div>
                   )}
-                  <div className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-[8px] sm:text-[10px] text-white backdrop-blur-md">You</div>
+                  <div className="absolute bottom-0.5 left-0.5 bg-black/60 px-1 py-0.5 rounded text-[8px] text-white">You</div>
                 </div>
               </div>
 
-              {/* Chat Panel (Bottom half of right col) */}
+              {/* Chat View (Mobile: Below video, only if chat on) */}
               {showChat && (
-                <div className="flex-1 w-full relative min-h-0 overflow-hidden border border-white/10 rounded-2xl bg-slate-900/50">
+                <div className="flex-1 min-h-0 w-full transition-all overflow-hidden border border-white/10 rounded-2xl bg-slate-900/50">
                   <ChatPanel messages={messages} onSendMessage={handleSendMessage} />
                 </div>
               )}
 
-              {/* Toolbar Controls */}
+              {/* Toolbar View (Always at bottom of right column) */}
               <div className="h-14 sm:h-16 bg-slate-900 border border-white/10 rounded-2xl flex items-center justify-between px-2 sm:px-4 shrink-0 shadow-lg">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <button onClick={() => setMicOn(!micOn)} className={`p-2 sm:p-2.5 rounded-lg sm:rounded-xl transition-all ${micOn ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white'}`} title={micOn ? 'Mute' : 'Unmute'}>
-                    {micOn ? <Mic className="w-4 h-4 sm:w-5 h-5" /> : <MicOff className="w-4 h-4 sm:w-5 h-5" />}
+                <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
+                  <button onClick={() => setMicOn(!micOn)} className={`p-2 sm:p-2.5 rounded-lg transition-all ${micOn ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-red-500/20 text-red-500 hover:bg-red-500'}`} title="Mic">
+                    {micOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
                   </button>
-                  <button onClick={() => setVideoOn(!videoOn)} className={`p-2 sm:p-2.5 rounded-lg sm:rounded-xl transition-all ${videoOn ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white'}`} title={videoOn ? 'Stop Video' : 'Start Video'}>
-                    {videoOn ? <Video className="w-4 h-4 sm:w-5 h-5" /> : <VideoOff className="w-4 h-4 sm:w-5 h-5" />}
+                  <button onClick={() => setVideoOn(!videoOn)} className={`p-2 sm:p-2.5 rounded-lg transition-all ${videoOn ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-red-500/20 text-red-500 hover:bg-red-500'}`} title="Video">
+                    {videoOn ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
                   </button>
                   <div className="w-px h-5 bg-white/10 mx-0.5 sm:mx-1"></div>
                   <button
@@ -514,25 +506,34 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
                       if (window.innerWidth < 1024) setShowChat(false);
                       setShowEditor(!showEditor);
                     }}
-                    className={`p-2 sm:p-2.5 rounded-lg sm:rounded-xl transition-all ${showEditor ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-slate-800 hover:bg-slate-700 text-white'}`} title="Code Editor">
-                    <Code className="w-4 h-4 sm:w-5 h-5" />
+                    className={`p-2 sm:p-2.5 rounded-lg transition-all ${showEditor ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-white hover:bg-slate-700'}`}
+                    title="Editor"
+                  >
+                    <Code className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => {
                       if (window.innerWidth < 1024) setShowEditor(false);
                       setShowChat(!showChat);
                     }}
-                    className={`p-2 sm:p-2.5 rounded-lg sm:rounded-xl transition-all ${showChat ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-slate-800 hover:bg-slate-700 text-white'}`} title="Chat">
-                    <MessageCircle className="w-4 h-4 sm:w-5 h-5" />
+                    className={`p-2 sm:p-2.5 rounded-lg transition-all ${showChat ? 'bg-teal-500 text-white' : 'bg-slate-800 text-white hover:bg-slate-700'}`}
+                    title="Chat"
+                  >
+                    <MessageCircle className="w-4 h-4" />
                   </button>
                 </div>
-
-                <button onClick={handleEndSession} disabled={actionLoading} className="px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold text-[10px] sm:text-sm transition-all flex items-center gap-1.5 sm:gap-2 shadow-lg disabled:opacity-50">
-                  <PhoneOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span className="hidden min-[350px]:inline">End Call</span>
+                <button onClick={handleEndSession} disabled={actionLoading} className="px-2.5 sm:px-4 py-2 rounded-lg bg-red-500 hover:bg-red-400 text-white font-bold text-[10px] sm:text-xs transition-all flex items-center gap-1 sm:gap-2 shadow-lg disabled:opacity-50 shrink-0">
+                  <PhoneOff className="w-3.5 h-3.5" /> <span className="hidden min-[360px]:inline">End Call</span>
                 </button>
               </div>
-
             </div>
+
+            {/* 2. Editor Section (Mobile: Stacks below video or takes full room if toggled) */}
+            {showEditor && (
+              <div className="w-full lg:w-3/5 xl:w-2/3 flex-1 lg:h-full transition-all flex flex-col min-h-0 lg:order-1">
+                <CodeEditor code={code} language={language} onChange={handleCodeChange} onLanguageChange={handleLanguageChange} />
+              </div>
+            )}
           </div>
         )}
       </main>
