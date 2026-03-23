@@ -16,7 +16,7 @@ export default function CodeEditor({ language, code, onChange, onLanguageChange 
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-[pulse_2s_ease-in-out_infinite]"></span>
           Shared Editor
         </div>
-        <select 
+        <select
           className="bg-slate-800 text-slate-300 text-xs px-3 py-1.5 rounded-lg border border-white/10 outline-none focus:border-emerald-500 transition-colors cursor-pointer"
           value={language}
           onChange={(e) => onLanguageChange(e.target.value)}
@@ -28,7 +28,7 @@ export default function CodeEditor({ language, code, onChange, onLanguageChange 
           <option value="css">CSS</option>
         </select>
       </div>
-      <div className="flex-1 w-full relative min-h-[500px]">
+      <div className="flex-1 w-full relative min-h-[300px] lg:min-h-[500px]">
         <Editor
           height="100%"
           theme="vs-dark"

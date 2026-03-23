@@ -408,7 +408,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
       </nav>
 
       {/* Workspace */}
-      <main className="flex-1 p-2 lg:p-4 flex flex-col relative overflow-hidden min-h-0">
+      <main className="flex-1 p-2 lg:p-4 flex flex-col relative overflow-y-auto lg:overflow-hidden min-h-0">
         {session?.status === 'active' && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40vw] h-[40vw] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
         )}
@@ -444,7 +444,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
 
             {/* Left Col: Code Editor */}
             {showEditor && (
-              <div className="w-full lg:w-3/5 xl:w-2/3 min-h-[40vh] lg:min-h-0 lg:h-full transition-all flex flex-col">
+              <div className="w-full lg:w-3/5 xl:w-2/3 h-[50vh] lg:h-full transition-all flex flex-col shrink-0 lg:shrink">
                 <CodeEditor code={code} language={language} onChange={handleCodeChange} onLanguageChange={handleLanguageChange} />
               </div>
             )}
@@ -453,7 +453,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
             <div className={`flex flex-col gap-3 transition-all lg:h-full min-h-0 ${showEditor ? 'w-full lg:w-2/5 xl:w-1/3 shrink-0' : 'w-full max-w-4xl mx-auto flex-1'} `}>
 
               {/* VIDEO GRID (Top half of right col) */}
-              <div className="w-full bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative aspect-[16/9] lg:aspect-auto lg:h-[40%] shrink-0">
+              <div className="w-full bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative aspect-video lg:aspect-auto lg:h-[40%] shrink-0">
 
                 {/* Remote WebRTC Video */}
                 <video
@@ -496,7 +496,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
 
               {/* Chat Panel (Bottom half of right col) */}
               {showChat && (
-                <div className="flex-1 min-h-[300px] lg:min-h-0 w-full transition-all">
+                <div className="flex-1 min-h-[300px] lg:min-h-0 w-full transition-all overflow-hidden border border-white/10 rounded-2xl bg-slate-900/50">
                   <ChatPanel messages={messages} onSendMessage={handleSendMessage} />
                 </div>
               )}
