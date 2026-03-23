@@ -408,7 +408,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
       </nav>
 
       {/* Workspace */}
-      <main className="flex-1 p-2 lg:p-4 pb-20 sm:pb-24 lg:pb-4 flex flex-col relative overflow-y-auto lg:overflow-hidden min-h-0">
+      <main className="flex-1 p-2 lg:p-4 flex flex-col relative overflow-hidden min-h-0 container mx-auto">
         {session?.status === 'active' && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40vw] h-[40vw] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
         )}
@@ -443,15 +443,15 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
           <div className="flex-1 flex flex-col lg:flex-row gap-2 sm:gap-3 relative z-10 w-full min-h-0">
             {/* Left Col: Code Editor */}
             {showEditor && (
-              <div className="w-full lg:w-3/5 xl:w-2/3 h-[40vh] sm:h-[50vh] lg:h-full transition-all flex flex-col shrink-0 lg:shrink">
+              <div className="w-full lg:w-3/5 xl:w-2/3 flex-1 lg:h-full transition-all flex flex-col min-h-0">
                 <CodeEditor code={code} language={language} onChange={handleCodeChange} onLanguageChange={handleLanguageChange} />
               </div>
             )}
 
             {/* Right Col: Video grid + Chat */}
-            <div className={`flex flex-col gap-2 sm:gap-3 transition-all lg:h-full min-h-0 ${showEditor ? 'w-full lg:w-2/5 xl:w-1/3 shrink-0' : 'w-full max-w-4xl mx-auto flex-1'} `}>
+            <div className={`flex flex-col gap-2 sm:gap-3 transition-all lg:h-full min-h-0 ${showEditor ? 'w-full lg:w-2/5 xl:w-1/3' : 'w-full max-w-4xl mx-auto flex-1'} `}>
               {/* VIDEO GRID (Top half of right col) */}
-              <div className="w-full bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative aspect-video lg:aspect-auto lg:h-[35%] shrink-0">
+              <div className="w-full bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative aspect-video lg:aspect-auto shrink-0 max-h-[25vh] lg:max-h-none lg:h-[35%]">
 
                 {/* Remote WebRTC Video */}
                 <video
@@ -494,7 +494,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
 
               {/* Chat Panel (Bottom half of right col) */}
               {showChat && (
-                <div className="flex-1 min-h-[250px] lg:min-h-0 w-full transition-all overflow-hidden border border-white/10 rounded-2xl bg-slate-900/50 relative">
+                <div className="flex-1 min-h-[200px] lg:min-h-0 w-full transition-all overflow-hidden border border-white/10 rounded-2xl bg-slate-900/50 relative">
                   <ChatPanel messages={messages} onSendMessage={handleSendMessage} />
                 </div>
               )}
