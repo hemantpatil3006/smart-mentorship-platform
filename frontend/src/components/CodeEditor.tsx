@@ -46,7 +46,7 @@ export default function CodeEditor({ language, code, onChange, onLanguageChange 
           )}
         </div>
       </div>
-      <div className="flex-1 w-full relative min-h-[300px] lg:min-h-[500px]">
+      <div className="flex-1 w-full relative min-h-0">
         <Editor
           height="100%"
           theme="vs-dark"
@@ -66,6 +66,6 @@ export default function CodeEditor({ language, code, onChange, onLanguageChange 
           }}
         />
       </div>
-    </div>
+    </div >
   );
 }

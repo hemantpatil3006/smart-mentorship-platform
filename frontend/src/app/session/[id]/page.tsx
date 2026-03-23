@@ -376,7 +376,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
   const otherPersonEmail = isMentor ? session?.student?.email : session?.mentor?.email;
 
   return (
-    <div className="h-screen bg-slate-950 text-slate-200 font-sans flex flex-col overflow-hidden">
+    <div className="h-[100dvh] bg-slate-950 text-slate-200 font-sans flex flex-col overflow-hidden">
       {/* Navbar Header */}
       <nav className="h-14 sm:h-16 bg-slate-900/80 backdrop-blur-md border-b border-white/10 px-3 sm:px-6 flex justify-between items-center z-50 shrink-0">
         <div className="flex items-center gap-2 sm:gap-4">
@@ -449,7 +449,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
             )}
 
             {/* Right Col: Video grid + Chat */}
-            <div className={`flex flex-col gap-2 sm:gap-3 transition-all lg:h-full min-h-0 ${showEditor ? 'w-full lg:w-2/5 xl:w-1/3' : 'w-full max-w-4xl mx-auto flex-1'} `}>
+            <div className={`flex flex-col gap-2 sm:gap-3 transition-all lg:h-full min-h-0 relative ${showEditor ? 'w-full lg:w-2/5 xl:w-1/3' : 'w-full max-w-4xl mx-auto flex-1'} `}>
               {/* VIDEO GRID (Top half of right col) */}
               <div className="w-full bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative aspect-video lg:aspect-auto shrink-0 max-h-[25vh] lg:max-h-none lg:h-[35%]">
 
@@ -494,7 +494,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
 
               {/* Chat Panel (Bottom half of right col) */}
               {showChat && (
-                <div className="flex-1 min-h-[200px] lg:min-h-0 w-full transition-all overflow-hidden border border-white/10 rounded-2xl bg-slate-900/50 relative">
+                <div className="flex-1 w-full relative min-h-0 overflow-hidden border border-white/10 rounded-2xl bg-slate-900/50">
                   <ChatPanel messages={messages} onSendMessage={handleSendMessage} />
                 </div>
               )}
