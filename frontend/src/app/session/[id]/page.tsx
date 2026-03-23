@@ -174,20 +174,37 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
       currentSocket.on('connect', () => {
         currentSocket.emit('join-session', sessionId);
         // Alert room to trigger negotiation
-        setTimeout(() => currentSocket.emit('user-joined', sessionId), 1000);
+        setTimeout(() => {
+          currentSocket.emit('user-joined', sessionId);
+          // If I am mentor, trigger negotiation immediately in case student is already here
+          if (profile.role === 'mentor') {
+            startNegotiation();
+          }
+        }, 1000);
       });
 
       // === SIGNALING ===
-      currentSocket.on('user-joined', async () => {
-        // Only Mentor generates the offer to avoid collision
-        if (profile.role === 'mentor') {
-          const offer = await pc.createOffer();
-          await pc.setLocalDescription(offer);
-          currentSocket.emit('webrtc-offer', { sessionId, offer });
+      const startNegotiation = async () => {
+        if (profile.role === 'mentor' && pc.signalingState !== 'closed') {
+          console.log('Mentor initiating WebRTC offer...');
+          try {
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            currentSocket.emit('webrtc-offer', { sessionId, offer });
+          } catch (err) {
+            console.error('Failed to create offer:', err);
+          }
         }
+      };
+
+      currentSocket.on('user-joined', async () => {
+        console.log('Peer joined, starting negotiation...');
+        // Only Mentor generates the offer to avoid collision
+        await startNegotiation();
       });
 
       currentSocket.on('webrtc-offer', async (offer) => {
+        console.log('Received WebRTC offer, creating answer...');
         if (profile.role === 'student' && pc.signalingState !== 'closed') {
           await pc.setRemoteDescription(new RTCSessionDescription(offer));
           const answer = await pc.createAnswer();
@@ -197,6 +214,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
       });
 
       currentSocket.on('webrtc-answer', async (answer) => {
+        console.log('Received WebRTC answer...');
         if (pc.signalingState !== 'closed') {
           await pc.setRemoteDescription(new RTCSessionDescription(answer));
         }
@@ -371,8 +389,8 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
             <h1 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
               Mentorship Room
               <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest font-bold ${session?.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
-                  session?.status === 'completed' ? 'bg-slate-800 text-slate-400 border border-slate-700' :
-                    'bg-amber-500/20 text-amber-400'
+                session?.status === 'completed' ? 'bg-slate-800 text-slate-400 border border-slate-700' :
+                  'bg-amber-500/20 text-amber-400'
                 }`}>
                 {session?.status}
               </span>
