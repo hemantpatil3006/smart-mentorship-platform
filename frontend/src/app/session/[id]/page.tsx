@@ -10,7 +10,7 @@ import throttle from 'lodash.throttle';
 import dynamic from 'next/dynamic';
 import ChatPanel, { ChatMessage } from '@/components/ChatPanel';
 
-const CodeEditor = dynamic(() => import('@/components/CodeEditor'), { 
+const CodeEditor = dynamic(() => import('@/components/CodeEditor'), {
   ssr: false,
   loading: () => (
     <div className="flex justify-center items-center w-full h-full bg-[#1e1e1e] text-slate-500 rounded-2xl border border-white/10 flex-col gap-3">
@@ -37,7 +37,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [micOn, setMicOn] = useState(true);
   const [videoOn, setVideoOn] = useState(true);
 
@@ -97,7 +97,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
         .select('*')
         .eq('session_id', sessionId)
         .order('created_at', { ascending: true });
-        
+
       if (data) {
         setMessages(data.map((m: any) => ({ ...m, isMine: m.sender_id === profile.id })));
       }
@@ -207,7 +207,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
           if (pc.remoteDescription && pc.signalingState !== 'closed') {
             await pc.addIceCandidate(new RTCIceCandidate(candidate));
           }
-        } catch(e) { console.error('Error adding ICE candidate', e); }
+        } catch (e) { console.error('Error adding ICE candidate', e); }
       });
 
       // === DATA SYNC: Code & Chat ===
@@ -221,7 +221,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
       currentSocket.on('receive-message', (msg: any) => {
         setMessages(prev => {
           if (prev.find(m => m.id === msg.id)) return prev; // Avoid dupes
-          return [...prev, msg].sort((a,b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          return [...prev, msg].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
         });
       });
 
@@ -231,14 +231,14 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = null;
         }
-        
+
         // Verify if they left because they ended the session
         const { data } = await supabase
           .from('sessions')
           .select('*, mentor:profiles!mentor_id(email), student:profiles!student_id(email)')
           .eq('id', sessionId)
           .single();
-          
+
         if (data && data.status === 'completed') {
           setSession(data);
         }
@@ -292,7 +292,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
   // Chat message submission
   const handleSendMessage = async (text: string) => {
     if (!text.trim() || !profile) return;
-    
+
     const { data, error } = await supabase.from('messages').insert([{
       session_id: sessionId,
       sender_id: profile.id,
@@ -312,7 +312,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
     setActionLoading(true); setError('');
     const { data: authData } = await supabase.auth.getSession();
     try {
-      const res = await fetch('http://localhost:5000/api/sessions/join', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/sessions/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authData.session?.access_token}` },
         body: JSON.stringify({ session_id: sessionId })
@@ -320,14 +320,14 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setSession(data.session);
-    } catch(err: any) { setError(err.message); } finally { setActionLoading(false); }
+    } catch (err: any) { setError(err.message); } finally { setActionLoading(false); }
   };
 
   const handleEndSession = async () => {
     setActionLoading(true); setError('');
     const { data: authData } = await supabase.auth.getSession();
     try {
-      const res = await fetch('http://localhost:5000/api/sessions/end', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/sessions/end`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authData.session?.access_token}` },
         body: JSON.stringify({ session_id: sessionId })
@@ -335,7 +335,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setSession(data.session);
-    } catch(err: any) { setError(err.message); } finally { setActionLoading(false); }
+    } catch (err: any) { setError(err.message); } finally { setActionLoading(false); }
   };
 
   if (loading) return <div className="flex justify-center items-center h-screen bg-slate-950"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div></div>;
@@ -370,11 +370,10 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
           <div>
             <h1 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
               Mentorship Room
-              <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest font-bold ${
-                session?.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
-                session?.status === 'completed' ? 'bg-slate-800 text-slate-400 border border-slate-700' :
-                'bg-amber-500/20 text-amber-400'
-              }`}>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest font-bold ${session?.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
+                  session?.status === 'completed' ? 'bg-slate-800 text-slate-400 border border-slate-700' :
+                    'bg-amber-500/20 text-amber-400'
+                }`}>
                 {session?.status}
               </span>
             </h1>
@@ -411,8 +410,8 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">Ready to connect?</h2>
             <p className="text-slate-400 max-w-md mx-auto">
-              {isMentor 
-                ? "Waiting for the student to join the session. The room will unlock once they connect." 
+              {isMentor
+                ? "Waiting for the student to join the session. The room will unlock once they connect."
                 : "Your mentor has prepared a coding challenge. Join when ready."}
             </p>
             {!isMentor && (
@@ -424,7 +423,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
         ) : (
           /* ACTIVE STATE: FLEX COLUMNS */
           <div className="flex-1 flex flex-col lg:flex-row gap-3 relative z-10 w-full min-h-0">
-            
+
             {/* Left Col: Code Editor */}
             {showEditor && (
               <div className="w-full lg:w-3/5 xl:w-2/3 min-h-[40vh] lg:min-h-0 lg:h-full transition-all flex flex-col">
@@ -434,17 +433,17 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
 
             {/* Right Col: Video grid + Chat */}
             <div className={`flex flex-col gap-3 transition-all lg:h-full min-h-0 ${showEditor ? 'w-full lg:w-2/5 xl:w-1/3 shrink-0' : 'w-full max-w-4xl mx-auto flex-1'} `}>
-              
+
               {/* VIDEO GRID (Top half of right col) */}
               <div className="w-full bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative aspect-[16/9] lg:aspect-auto lg:h-[40%] shrink-0">
-                
+
                 {/* Remote WebRTC Video */}
-                <video 
-                  ref={remoteVideoRef} 
-                  autoPlay playsInline 
-                  className="w-full h-full object-cover" 
+                <video
+                  ref={remoteVideoRef}
+                  autoPlay playsInline
+                  className="w-full h-full object-cover"
                 />
-                
+
                 {/* Fallback if remote stream loads but is black/off */}
                 {!remoteStreamHasVideo && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -458,10 +457,10 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
                 {/* Local WebRTC Video (Picture-in-Picture) */}
                 <div className="absolute top-4 right-4 w-[30%] sm:w-[25%] aspect-[3/4] sm:aspect-video bg-slate-800 border-2 border-slate-700/80 rounded-xl overflow-hidden shadow-2xl z-20 transition-all hover:scale-105 group/pip bg-black">
                   {videoOn ? (
-                    <video 
-                      ref={localVideoRef} 
-                      autoPlay playsInline muted 
-                      className="w-full h-full object-cover transform -scale-x-100" 
+                    <video
+                      ref={localVideoRef}
+                      autoPlay playsInline muted
+                      className="w-full h-full object-cover transform -scale-x-100"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-slate-900">
@@ -469,9 +468,9 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
                     </div>
                   )}
                   {!micOn && (
-                     <div className="absolute top-1 right-1 p-1 bg-red-500 rounded backdrop-blur-md">
-                       <MicOff className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
-                     </div>
+                    <div className="absolute top-1 right-1 p-1 bg-red-500 rounded backdrop-blur-md">
+                      <MicOff className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
+                    </div>
                   )}
                   <div className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-[8px] sm:text-[10px] text-white backdrop-blur-md">You</div>
                 </div>
@@ -501,7 +500,7 @@ export default function SessionRoom({ params }: { params: Promise<{ id: string }
                     <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
-                
+
                 <button onClick={handleEndSession} disabled={actionLoading} className="px-3 sm:px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg disabled:opacity-50">
                   <PhoneOff className="w-4 h-4" /> <span className="hidden sm:inline">End Call</span>
                 </button>

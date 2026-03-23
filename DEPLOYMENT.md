@@ -21,6 +21,20 @@ We recommend **Railway** or **Render** for the backend because they natively sup
    - `SUPABASE_SERVICE_ROLE_KEY` (Your Supabase service role secret).
 7. Wait for the build. Once live, Railway will give you a domain (e.g., `mentorship-backend-production.up.railway.app`). **Copy this URL**.
 
+### Render Deployment (Alternative)
+1.  Push your code to GitHub.
+2.  Login to [Render.com](https://render.com/).
+3.  Click **New +** -> **Web Service**.
+4.  Connect your GitHub repository.
+5.  Set the following configuration:
+    -   **Name**: `mentorship-backend`
+    -   **Root Directory**: `backend`
+    -   **Runtime**: `Node`
+    -   **Build Command**: `npm install && npm run build`
+    -   **Start Command**: `npm start`
+6.  **Environment Variables**: Add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
+7.  Click **Create Web Service**.
+
 ---
 
 ## 🌐 2. Deploy the Frontend (Vercel)
@@ -33,7 +47,8 @@ Vercel is the creator of Next.js and the absolute best place to host the fronten
 5. **Environment Variables**: Open the Environment Variables section and add:
    - `NEXT_PUBLIC_SUPABASE_URL`: (Your Supabase project URL)
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: (Your Supabase Anon Public Key)
-   - `NEXT_PUBLIC_SOCKET_URL`: (Paste the live backend URL you got from Railway in Step 1!)
+   - `NEXT_PUBLIC_API_URL`: (Paste the live backend URL you got from Render/Railway!)
+   - `NEXT_PUBLIC_SOCKET_URL`: (Paste the live backend URL you got from Render/Railway!)
 6. Click **Deploy**.
 
 ---

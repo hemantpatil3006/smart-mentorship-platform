@@ -10,7 +10,7 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
+
   const [sessions, setSessions] = useState<any[]>([]);
   const [studentEmail, setStudentEmail] = useState('');
   const [sessionLoading, setSessionLoading] = useState(false);
@@ -24,7 +24,7 @@ export default function Dashboard() {
     if (!token) return;
 
     try {
-      const res = await fetch('http://localhost:5000/api/sessions/active', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/sessions/active`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -41,14 +41,14 @@ export default function Dashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        
+
         // Fetch profile
         const { data: profileData } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
-          
+
         setProfile(profileData);
         await fetchActiveSessions();
       } else {
@@ -58,12 +58,12 @@ export default function Dashboard() {
     };
 
     fetchUser();
-    
+
     // Auto-refresh active sessions every 5 seconds on the dashboard
     const interval = setInterval(() => {
       fetchActiveSessions();
     }, 5000);
-    
+
     return () => clearInterval(interval);
   }, [router, fetchActiveSessions]);
 
@@ -71,28 +71,28 @@ export default function Dashboard() {
     e.preventDefault();
     setSessionLoading(true);
     setSessionError('');
-    
+
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData.session?.access_token;
-    
+
     try {
-      const res = await fetch('http://localhost:5000/api/sessions/create', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/sessions/create`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}` 
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ student_email: studentEmail })
       });
-      
+
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || 'Failed to create session');
       }
-      
+
       setStudentEmail('');
       await fetchActiveSessions();
-    } catch(err: any) {
+    } catch (err: any) {
       setSessionError(err.message);
     } finally {
       setSessionLoading(false);
@@ -122,7 +122,7 @@ export default function Dashboard() {
           </div>
           <h1 className="text-xl font-bold text-white tracking-tight">Mentorship Platform</h1>
         </div>
-        <button 
+        <button
           onClick={handleLogout}
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-red-500/20 border border-transparent hover:border-red-500/50 rounded-lg transition-all"
         >
@@ -141,12 +141,12 @@ export default function Dashboard() {
             <p className="text-slate-400">{user?.email}</p>
           </div>
         </div>
-        
+
         <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-6 rounded-2xl border border-white/10 relative overflow-hidden">
           <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
           <h3 className="text-lg font-semibold text-white mb-2 relative z-10">Account Status</h3>
           <p className="text-sm font-medium text-slate-300 relative z-10">
-            Registered Role: 
+            Registered Role:
             <span className="uppercase tracking-wider font-bold text-emerald-400 ml-3 py-1.5 px-3 bg-emerald-500/10 rounded-full text-xs border border-emerald-500/20">
               {profile?.role || 'Pending'}
             </span>
@@ -187,8 +187,8 @@ export default function Dashboard() {
                         {profile?.role === 'mentor' ? `Student: ${session.student?.email}` : `Mentor: ${session.mentor?.email}`}
                       </p>
                     </div>
-                    
-                    <Link 
+
+                    <Link
                       href={`/session/${session.id}`}
                       className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold rounded-lg hover:from-emerald-400 hover:to-teal-500 transition-all"
                     >
@@ -206,7 +206,7 @@ export default function Dashboard() {
               <div className="border border-white/10 p-6 rounded-2xl bg-gradient-to-b from-slate-900/50 to-slate-900/30">
                 <h3 className="font-bold text-white mb-1">Create New Session</h3>
                 <p className="text-slate-400 text-xs mb-4">Invite a student to a 1-on-1.</p>
-                
+
                 {sessionError && (
                   <div className="mb-3 p-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-xs text-center">
                     {sessionError}
