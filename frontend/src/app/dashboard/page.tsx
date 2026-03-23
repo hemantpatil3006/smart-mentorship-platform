@@ -115,61 +115,63 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30">
-      <nav className="bg-slate-900/50 backdrop-blur-lg border-b border-white/10 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+      <nav className="bg-slate-900/50 backdrop-blur-lg border-b border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center sticky top-0 z-50">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center">
-            <span className="font-bold text-white text-sm">MP</span>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center shrink-0">
+            <span className="font-bold text-white text-xs sm:text-sm">MP</span>
           </div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Mentorship Platform</h1>
+          <h1 className="text-base sm:text-xl font-bold text-white tracking-tight leading-none uppercase sm:normal-case">
+            <span className="hidden min-[400px]:inline">Mentorship</span> Platform
+          </h1>
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-red-500/20 border border-transparent hover:border-red-500/50 rounded-lg transition-all"
+          className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-red-500/20 border border-transparent hover:border-red-500/50 rounded-lg transition-all"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
           <span>Sign Out</span>
         </button>
       </nav>
 
-      <main className="max-w-5xl mx-auto mt-10 p-6 md:p-10 mb-20 space-y-8">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-slate-400">
-            <UserCircle className="w-10 h-10" />
+      <main className="max-w-5xl mx-auto mt-6 sm:mt-10 p-4 sm:p-6 md:p-10 mb-20 space-y-6 sm:space-y-8">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-slate-400 shrink-0">
+            <UserCircle className="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
-          <div>
-            <h2 className="text-3xl font-bold text-white tracking-tight">Welcome back</h2>
-            <p className="text-slate-400">{user?.email}</p>
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-3xl font-bold text-white tracking-tight truncate">Welcome back</h2>
+            <p className="text-slate-400 text-xs sm:text-base truncate">{user?.email}</p>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-6 rounded-2xl border border-white/10 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-4 sm:p-6 rounded-2xl border border-white/10 relative overflow-hidden">
           <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
-          <h3 className="text-lg font-semibold text-white mb-2 relative z-10">Account Status</h3>
-          <p className="text-sm font-medium text-slate-300 relative z-10">
+          <h3 className="text-base sm:text-lg font-semibold text-white mb-2 relative z-10">Account Status</h3>
+          <p className="text-xs sm:text-sm font-medium text-slate-300 relative z-10 flex items-center">
             Registered Role:
-            <span className="uppercase tracking-wider font-bold text-emerald-400 ml-3 py-1.5 px-3 bg-emerald-500/10 rounded-full text-xs border border-emerald-500/20">
+            <span className="uppercase tracking-wider font-bold text-emerald-400 ml-2 sm:ml-3 py-1 px-2.5 sm:py-1.5 sm:px-3 bg-emerald-500/10 rounded-full text-[10px] sm:text-xs border border-emerald-500/20">
               {profile?.role || 'Pending'}
             </span>
           </p>
         </div>
 
         {/* Sessions Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 group border border-white/10 p-8 rounded-2xl bg-slate-900/50 hover:bg-slate-800/80 hover:border-white/20 transition-all duration-300 flex flex-col h-full">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="bg-teal-500/20 w-12 h-12 rounded-xl flex items-center justify-center text-teal-500 group-hover:scale-110 group-hover:bg-teal-500 group-hover:text-white transition-all">
-                <Video className="w-6 h-6" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-2 group border border-white/10 p-4 sm:p-6 md:p-8 rounded-2xl bg-slate-900/50 hover:bg-slate-800/80 hover:border-white/20 transition-all duration-300 flex flex-col h-full">
+            <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <div className="bg-teal-500/20 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-teal-500 group-hover:scale-110 group-hover:bg-teal-500 group-hover:text-white transition-all shrink-0">
+                <Video className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div>
-                <h3 className="font-bold text-xl text-white">Active Sessions</h3>
-                <p className="text-slate-400 text-sm">Your upcoming and ongoing mentoring calls.</p>
+                <h3 className="font-bold text-lg sm:text-xl text-white">Active Sessions</h3>
+                <p className="text-slate-400 text-xs sm:text-sm">Your upcoming and ongoing mentoring calls.</p>
               </div>
             </div>
 
             <div className="flex-1 space-y-4">
               {sessions.length === 0 ? (
-                <div className="bg-slate-900/50 rounded-xl p-6 text-center border border-white/5">
-                  <p className="text-slate-400">No active or pending sessions.</p>
+                <div className="bg-slate-900/50 rounded-xl p-4 sm:p-6 text-center border border-white/5">
+                  <p className="text-slate-400 text-sm">No active or pending sessions.</p>
                 </div>
               ) : (
                 sessions.map(session => (
@@ -201,31 +203,31 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 h-full">
+          <div className="flex flex-col gap-4 sm:gap-6 h-full">
             {profile?.role === 'mentor' && (
-              <div className="border border-white/10 p-6 rounded-2xl bg-gradient-to-b from-slate-900/50 to-slate-900/30">
-                <h3 className="font-bold text-white mb-1">Create New Session</h3>
-                <p className="text-slate-400 text-xs mb-4">Invite a student to a 1-on-1.</p>
+              <div className="border border-white/10 p-4 sm:p-6 rounded-2xl bg-gradient-to-b from-slate-900/50 to-slate-900/30">
+                <h3 className="font-bold text-white mb-0.5 sm:mb-1 text-sm sm:text-base">Create New Session</h3>
+                <p className="text-slate-400 text-[10px] sm:text-xs mb-3 sm:mb-4">Invite a student to a 1-on-1.</p>
 
                 {sessionError && (
-                  <div className="mb-3 p-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-xs text-center">
+                  <div className="mb-3 p-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-[10px] sm:text-xs text-center font-medium">
                     {sessionError}
                   </div>
                 )}
 
-                <form onSubmit={handleCreateSession} className="space-y-3">
+                <form onSubmit={handleCreateSession} className="space-y-2.5 sm:space-y-3">
                   <input
                     type="email"
                     placeholder="Student Email"
                     value={studentEmail}
                     onChange={(e) => setStudentEmail(e.target.value)}
-                    className="w-full px-4 py-2 bg-slate-950/50 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-slate-500 transition-all"
+                    className="w-full px-4 py-2 bg-slate-950/50 border border-white/10 rounded-lg sm:rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-slate-500 transition-all font-medium"
                     required
                   />
                   <button
                     type="submit"
                     disabled={sessionLoading}
-                    className="w-full py-2 px-4 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-xl border border-white/10 transition-all disabled:opacity-50"
+                    className="w-full py-2 px-4 bg-slate-800 hover:bg-slate-700 text-white text-xs sm:text-sm font-bold rounded-lg sm:rounded-xl border border-white/10 transition-all disabled:opacity-50 shadow-lg"
                   >
                     {sessionLoading ? 'Creating...' : 'Generate Session URL'}
                   </button>
@@ -233,12 +235,12 @@ export default function Dashboard() {
               </div>
             )}
 
-            <div className="group border border-white/10 p-6 rounded-2xl bg-slate-900/50 hover:bg-slate-800/80 transition-all flex-1">
-              <div className="bg-emerald-500/20 w-10 h-10 rounded-lg flex items-center justify-center mb-4 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                <MessageSquare className="w-5 h-5" />
+            <div className="group border border-white/10 p-4 sm:p-6 rounded-2xl bg-slate-900/50 hover:bg-slate-800/80 transition-all flex-1">
+              <div className="bg-emerald-500/20 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center mb-3 sm:mb-4 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <h3 className="font-bold text-white mb-1">Messages</h3>
-              <p className="text-slate-400 text-xs">Review code snippets and share resources.</p>
+              <h3 className="font-bold text-white mb-0.5 sm:mb-1 text-sm sm:text-base">Messages</h3>
+              <p className="text-slate-400 text-[10px] sm:text-xs">Review code snippets and share resources.</p>
             </div>
           </div>
         </div>
