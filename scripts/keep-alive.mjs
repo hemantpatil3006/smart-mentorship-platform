@@ -34,14 +34,19 @@ async function keepAlive() {
      * await supabase.from('keep_alive').insert([{ last_ping: new Date() }]);
      */
     
-    const { data, error, count } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
-      .select('id', { count: 'exact', head: true });
+      .select('id')
+      .limit(1);
 
-    if (error) throw error;
+    if (error) {
+       if (error.message.includes('fetch')) {
+         throw new Error(`Connection failed. The project might be paused or the URL is incorrect. Details: ${error.message}`);
+       }
+       console.warn('Note: "profiles" query returned an error:', error.message);
+    }
 
     console.log('✅ Ping Success: Database is active.');
-    console.log(`📊 Current profile count: ${count}`);
     
   } catch (err) {
     console.error('❌ Ping Failed:', err.message);
